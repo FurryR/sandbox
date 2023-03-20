@@ -1,4 +1,3 @@
-import uuid from './helper'
 import { Bridge } from './bridge'
 export type Prepatcher<T = {}> = (
   globalThis: WindowOrWorkerGlobalScope & T,
@@ -23,7 +22,6 @@ export class Sandbox {
           [
             `
           ;((prepatch) => {
-            ${uuid}
             ${Bridge}
             const post = globalThis.postMessage
             const bridge = new Bridge(post.bind(this.scope), ev =>

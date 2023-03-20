@@ -1,4 +1,3 @@
-import uuid from './helper'
 export interface MessageValue {
   method: string
   args: unknown[]
@@ -30,9 +29,22 @@ export class Bridge {
     string,
     (val: unknown[]) => unknown | Promise<unknown>
   >
+  // polyfill Source: https://stackoverflow.com/a/2117523
+  static uuid() {
+    return crypto.randomUUID instanceof Function
+      ? crypto.randomUUID()
+      : '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c =>
+          (
+            Number(c) ^
+            (crypto.getRandomValues(new Uint8Array(1))[0] &
+              (15 >> (Number(c) / 4)))
+          ).toString(16)
+        )
+  }
+
   send(method: string, args: unknown[]): Promise<unknown> {
     return new Promise<unknown>((resolve, reject) => {
-      const id = uuid()
+      const id = Bridge.uuid()
       this.send_fn({
         type: 'message',
         id,
